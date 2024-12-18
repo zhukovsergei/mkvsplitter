@@ -1,14 +1,14 @@
 <script setup>
 import {reactive} from 'vue'
-import {Greet} from '../../wailsjs/go/main/App'
+import {SelectMKVFile} from '../../wailsjs/go/main/App'
 
 const data = reactive({
   name: "",
   resultText: "Please enter your name below 👇",
 })
 
-function greet() {
-  Greet(data.name).then(result => {
+function selectFile() {
+  SelectMKVFile(data.name).then(result => {
     data.resultText = result
   })
 }
@@ -20,7 +20,7 @@ function greet() {
     <div id="result" class="result">{{ data.resultText }}</div>
     <div id="input" class="input-box">
       <input id="name" v-model="data.name" autocomplete="off" class="input" type="text"/>
-      <button class="btn" @click="greet">Greet</button>
+      <button class="btn" @click="selectFile">Greet</button>
     </div>
   </main>
 </template>
