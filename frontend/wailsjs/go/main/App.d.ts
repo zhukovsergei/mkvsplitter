@@ -3,4 +3,4 @@
 
 export function SelectMKVFile():Promise<string>;
 
-export function SplitMKV(arg1:string,arg2:number,arg3:number):Promise<string>;
+export function SplitMKV(arg1:string,arg2:string,arg3:string):Promise<string>;

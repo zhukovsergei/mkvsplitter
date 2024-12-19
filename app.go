@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os/exec"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -44,7 +43,7 @@ func (a *App) SelectMKVFile() string {
 	return file
 }
 
-func (a *App) SplitMKV(inputPath string, startSec, endSec int) (string, error) {
+func (a *App) SplitMKV(inputPath, start, end string) (string, error) {
 	if inputPath == "" {
 		return "", fmt.Errorf("no file selected")
 	}
@@ -53,10 +52,10 @@ func (a *App) SplitMKV(inputPath string, startSec, endSec int) (string, error) {
 	base := filepath.Base(inputPath)
 	ext := filepath.Ext(base)
 	nameOnly := strings.TrimSuffix(base, ext)
-	outputPath := filepath.Join(dir, fmt.Sprintf("%s_%d-%d.mkv", nameOnly, startSec, endSec))
+	outputPath := filepath.Join(dir, fmt.Sprintf("%s_%s-%s.mkv", nameOnly, strings.ReplaceAll(start, ":", ""), strings.ReplaceAll(end, ":", "")))
 
-	// ffmpeg -i input.mkv -ss startSec -to endSec -c copy output.mkv
-	cmd := exec.Command(".\\ffmpeg.exe", "-i", inputPath, "-ss", strconv.Itoa(startSec), "-to", strconv.Itoa(endSec), "-c", "copy", outputPath)
+	// ffmpeg -i input.mkv -ss HH:MM:SS -to HH:MM:SS -c copy output.mkv
+	cmd := exec.Command(".\\ffmpeg.exe", "-i", inputPath, "-ss", start, "-to", end, "-c", "copy", "-y", outputPath)
 
 	if err := cmd.Run(); err != nil {
 		return "", fmt.Errorf("error on ffmpeg: %w", err)

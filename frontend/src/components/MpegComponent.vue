@@ -5,8 +5,8 @@ import { SelectMKVFile, SplitMKV } from '../../wailsjs/go/main/App'
 const data = reactive({
   infoText: "Select file below 👇",
   pathToFile: "",
-  startSec: 10,
-  endSec: 20
+  startTime: "00:00:10",
+  endTime: "00:00:20"
 })
 
 function selectFile() {
@@ -24,7 +24,7 @@ async function cutFile() {
   }
 
   try {
-    const output = await SplitMKV(data.pathToFile, data.startSec, data.endSec)
+    const output = await SplitMKV(data.pathToFile, data.startTime, data.endTime)
     data.infoText = "Done: " + output
   } catch (err) {
     data.infoText = "Error: " + err
@@ -41,12 +41,12 @@ async function cutFile() {
 
     <div style="margin-top:20px;">
       <label>
-        Start (sec):
-        <input type="number" v-model="data.startSec" class="input" style="width:60px;" />
+        Start (HH:MM:SS):
+        <input type="text" v-model="data.startTime" class="input" style="width:100px;" />
       </label>
       <label style="margin-left:20px;">
-        End (sec):
-        <input type="number" v-model="data.endSec" class="input" style="width:60px;" />
+        End (HH:MM:SS):
+        <input type="text" v-model="data.endTime" class="input" style="width:100px;" />
       </label>
 
       <button class="btn" @click="cutFile" style="margin-left:20px;">Go</button>
