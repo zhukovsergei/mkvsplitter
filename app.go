@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -52,14 +53,23 @@ func (a *App) SplitMKV(inputPath, start, end string) (string, error) {
 	base := filepath.Base(inputPath)
 	ext := filepath.Ext(base)
 	nameOnly := strings.TrimSuffix(base, ext)
-	outputPath := filepath.Join(dir, fmt.Sprintf("%s_%s-%s.mkv", nameOnly, strings.ReplaceAll(start, ":", ""), strings.ReplaceAll(end, ":", "")))
 
-	// ffmpeg -i input.mkv -ss HH:MM:SS -to HH:MM:SS -c copy output.mkv
-	cmd := exec.Command(".\\ffmpeg.exe", "-i", inputPath, "-ss", start, "-to", end, "-c", "copy", "-y", outputPath)
+	outputMKV := filepath.Join(dir, fmt.Sprintf("%s_%s-%s.mkv", nameOnly, strings.ReplaceAll(start, ":", ""), strings.ReplaceAll(end, ":", "")))
+	outputMP4 := filepath.Join(dir, fmt.Sprintf("%s_%s-%s.mp4", nameOnly, strings.ReplaceAll(start, ":", ""), strings.ReplaceAll(end, ":", "")))
 
-	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("error on ffmpeg: %w", err)
+	cmdCut := exec.Command(".\\ffmpeg.exe", "-i", inputPath, "-ss", start, "-to", end, "-c", "copy", "-y", outputMKV)
+	if err := cmdCut.Run(); err != nil {
+		return "", fmt.Errorf("error cutting mkv: %w", err)
 	}
 
-	return outputPath, nil
+	cmdConvert := exec.Command(".\\ffmpeg.exe", "-i", outputMKV, "-c", "copy", "-y", outputMP4)
+	if err := cmdConvert.Run(); err != nil {
+		return "", fmt.Errorf("error converting to mp4: %w", err)
+	}
+
+	if err := os.Remove(outputMKV); err != nil {
+		fmt.Printf("Can't remove temp MKV file: %v\n", err)
+	}
+
+	return outputMP4, nil
 }
