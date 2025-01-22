@@ -1,0 +1,18 @@
+*.go linguist-language=Go
+
+*.pb.go linguist-generated=true
+*.gen.go linguist-generated=true
+
+vendor/**/* linguist-vendored=true
+
+*.json linguist-detectable=false
+*.yaml linguist-detectable=false
+*.yml linguist-detectable=false
+*.toml linguist-detectable=false
+*.lock linguist-detectable=false
+*.md linguist-detectable=false
+
+*.log linguist-detectable=false
+*.tmp linguist-detectable=false
+*.out linguist-detectable=false
+*.exe linguist-detectable=false
