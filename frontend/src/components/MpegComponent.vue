@@ -2,6 +2,26 @@
 import { reactive } from 'vue'
 import { SelectMKVFile, SplitMKV } from '../../wailsjs/go/main/App'
 
+function parseHms(value) {
+  let digits = value.replace(/[^\d]/g, '')
+  if (!digits) {
+    return '00:00:00'
+  }
+  let sec = digits.slice(-2)
+  let min = digits.slice(-4, -2)
+  let hrs = digits.slice(0, -4)
+
+  if (!hrs) hrs = '00'
+  if (!min) min = '00'
+  if (!sec) sec = '00'
+
+  hrs = hrs.padStart(2, '0')
+  min = min.padStart(2, '0')
+  sec = sec.padStart(2, '0')
+
+  return `${hrs}:${min}:${sec}`
+}
+
 const data = reactive({
   infoText: "Select file below 👇",
   pathToFile: "",
@@ -11,16 +31,15 @@ const data = reactive({
 
 function selectFile() {
   SelectMKVFile().then(result => {
-    data.infoText = result;
-    data.pathToFile = result;
+    data.infoText = result
+    data.pathToFile = result
   })
 }
 
 async function cutFile() {
-
-  if (!data.pathToFile) {
+  if (!data.pathToFile || data.pathToFile.startsWith("Error") || data.pathToFile === "File was not selected.") {
     data.infoText = "Select file!"
-    return;
+    return
   }
 
   try {
@@ -29,6 +48,14 @@ async function cutFile() {
   } catch (err) {
     data.infoText = "Error: " + err
   }
+}
+
+function formatStartTime() {
+  data.startTime = parseHms(data.startTime)
+}
+
+function formatEndTime() {
+  data.endTime = parseHms(data.endTime)
 }
 </script>
 
@@ -42,11 +69,24 @@ async function cutFile() {
     <div style="margin-top:20px;">
       <label>
         Start (HH:MM:SS):
-        <input type="text" v-model="data.startTime" class="input" style="width:100px;" />
+        <input
+          type="text"
+          v-model="data.startTime"
+          class="input"
+          style="width:100px;"
+          @blur="formatStartTime"
+        />
       </label>
+
       <label style="margin-left:20px;">
         End (HH:MM:SS):
-        <input type="text" v-model="data.endTime" class="input" style="width:100px;" />
+        <input
+          type="text"
+          v-model="data.endTime"
+          class="input"
+          style="width:100px;"
+          @blur="formatEndTime"
+        />
       </label>
 
       <button class="btn" @click="cutFile" style="margin-left:20px;">Go</button>
