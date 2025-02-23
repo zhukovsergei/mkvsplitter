@@ -7,6 +7,7 @@ function parseHms(value) {
   if (!digits) {
     return '00:00:00'
   }
+
   let sec = digits.slice(-2)
   let min = digits.slice(-4, -2)
   let hrs = digits.slice(0, -4)
@@ -25,8 +26,8 @@ function parseHms(value) {
 const data = reactive({
   infoText: "Select file below 👇",
   pathToFile: "",
-  startTime: "00:00:10",
-  endTime: "00:00:20"
+  startTime: "00:00:00",
+  endTime:   "00:00:00"
 })
 
 function selectFile() {
@@ -52,10 +53,16 @@ async function cutFile() {
 
 function formatStartTime() {
   data.startTime = parseHms(data.startTime)
+  if (data.endTime === '00:00:00') {
+    data.endTime = data.startTime
+  }
 }
 
 function formatEndTime() {
   data.endTime = parseHms(data.endTime)
+  if (data.startTime === '00:00:00') {
+    data.startTime = data.endTime
+  }
 }
 </script>
 
