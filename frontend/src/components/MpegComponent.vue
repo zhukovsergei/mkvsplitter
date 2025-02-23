@@ -7,7 +7,6 @@ function parseHms(value) {
   if (!digits) {
     return '00:00:00'
   }
-
   let sec = digits.slice(-2)
   let min = digits.slice(-4, -2)
   let hrs = digits.slice(0, -4)
@@ -27,7 +26,8 @@ const data = reactive({
   infoText: "Select file below 👇",
   pathToFile: "",
   startTime: "00:00:00",
-  endTime:   "00:00:00"
+  endTime: "00:00:00",
+  isCutting: false
 })
 
 function selectFile() {
@@ -38,6 +38,16 @@ function selectFile() {
 }
 
 async function cutFile() {
+  if (data.isCutting) {
+    return
+  }
+
+  data.isCutting = true
+
+  setTimeout(() => {
+    data.isCutting = false
+  }, 1500)
+
   if (!data.pathToFile || data.pathToFile.startsWith("Error") || data.pathToFile === "File was not selected.") {
     data.infoText = "Select file!"
     return
@@ -96,7 +106,12 @@ function formatEndTime() {
         />
       </label>
 
-      <button class="btn" @click="cutFile" style="margin-left:20px;">Go</button>
+      <button class="btn"
+              @click="cutFile"
+              :disabled="data.isCutting"
+              style="margin-left:20px;">
+        Go
+      </button>
     </div>
   </main>
 </template>
@@ -117,6 +132,11 @@ function formatEndTime() {
   margin-left: 20px;
   padding: 0 8px;
   cursor: pointer;
+}
+
+.input-box .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .input-box .input {
